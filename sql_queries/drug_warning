@@ -1,0 +1,163 @@
+\dt
+SELECT COUNT(*) from compound_structures 
+;
+\dt
+SELECT COUNT(*) FROM assays
+;
+SELECT COUNT(*) FROM compound_records ;
+\dt
+SELECT COUNT(*) FROM target_dictionary;
+`ls`
+;
+SELECT COUNT(*) FROM `ls`
+;
+\dv
+\dn
+\df
+\dT
+SELECT a
+\d drug_warning 
+SELECT * FROM drug_indication LIMIT 5;
+SELECT * FROM drug_warning LIMIT 10
+;
+SELECT * FROM drug_warning LIMIT 3;
+SELECT * FROM drug warning
+\d drug_warning
+;
+SELECT * FROM drug_warning
+ORDER BY warning_year 
+LIMIT 5;
+a
+;
+\d drug_warning 
+SELECT * from drug_warning where warning_country like 'Mexico';
+SELECT * from drug_warning where warning_country like 'Cyprus';
+SELECT * from drug_warning where warning_country like 'Cypru;%';
+SELECT *
+FROM your_table
+WHERE warning_country LIKE '%;Cyprus;%'
+   OR warning_country LIKE 'Cyprus;%'
+   OR warning_country LIKE '%;Cyprus'
+   OR warning_country = 'Cyprus';
+SELECT *
+FROM drug_warning
+WHERE warning_country LIKE '%;Cyprus;%'
+   OR warning_country LIKE 'Cyprus;%'
+   OR warning_country LIKE '%;Cyprus'
+   OR warning_country = 'Cyprus';
+ SELECT * FROM warning_refs LIMIT 3
+;
+SELECT * FROM drug_warning 
+WHERE 'Cyprus' = ANY ((string_to_array(warning_country, ';'));
+\d
+SELECT * FROM drug_warning LIMIT 10;
+SELECT * FROM drug_warning LIMIT 10;
+SELECT COUNT(*) FROM drug_warning
+;
+Create temp table my_temp as 
+select *
+from drug_warning 
+;
+\dt
+Create temp table my_temp as 
+select *
+from drug_warning 
+order by warning_year
+limit 100;
+delete my_temp
+Create temp table my_temp as 
+select *
+from drug_warning 
+order by warning_year
+limit 100;
+
+Create temp table my_temp as 
+select *
+from drug_warning 
+order by warning_year
+limit 100;
+delete my_temp
+
+Create temp table my_temp as 
+select *
+from drug_warning 
+order by warning_year
+limit 100;
+delete my_temp
+
+Create temp table my_temp as 
+select *
+from drug_warning 
+order by warning_year
+limit 100;
+
+
+Create temp table my_temp as 
+select *
+from drug_warning 
+order by warning_year
+limit 100;
+delete my_temp
+\dt
+drop my_temp;
+drop my_temp
+drop table my_temp
+;
+drop table my_temp;
+select * FROM drug_warning 
+order by warning_year 
+limit 20;
+CREATE TEMP TABLE my_temp as 
+select * from drug_warning
+order by warning_year
+limit 40;
+\dt
+select my_ta
+ble
+;
+select * my_table;
+select * my_temp;
+select * from my_temp;
+drop table my_temp;
+CREATE TEMP TABLE my_temp as 
+select warning_description, warning_country from drug_warning
+order by warning_year
+limit 3;
+select * from my_temp
+;
+\q
+\help
+\d
+drug_warning
+\d drug_warning
+SELECT * from drug_warning
+\dt 
+\dt drug_warning
+01_basic_counts.sql 
+\i 01_basic_counts.sql 
+\h
+help
+\?
+SElECT COUNT(drug_warning)
+SElECT COUNT(drug_warning);
+SElECT COUNT(drug_warnings);
+SElECT COUNT(*) from drug_warning;
+SELECT * from drug_warning;
+SELECT * from drug_warning limit 10;
+SELECT * from drug_warning.molregno limit 10;
+type drug_warning;
+type of drug_warning;
+\i 01_basic_counts.sql 
+SELECT * from chembl;
+\d
+drug_warning[1]
+;
+select drug_warning[1];
+select chwmbl.drug_warning[1];
+select drug_warning[0];
+select \d drug_warning
+select \d drug_warnings
+\d drug_warning
+\d drug_warning
+\d drug_warning
+\s drug_warning
