@@ -1,15 +1,27 @@
 -- Which compounds have the best average potency across multiple assays?
-SELECT cs.canonical_smiles,
-       COUNT(a.activity_id)   AS num_assays,
+-- This query selects canoni
+SELECT
+       cs.molregno as record_number,
+       COUNT(a.activity_id)   AS assays_count,
        AVG(a.standard_value)  AS avg_ic50_nM,
-       MIN(a.standard_value)  AS best_ic50_nM
+       MIN(a.standard_value)  AS best_ic50_nM,
+       cs.canonical_smiles,
+       dm.mechanism_of_action AS mechanism
 FROM compound_structures cs
+ 
+-- Join the mechanism of action based on the molregno
+LEFT JOIN drug_mechanism dm ON cs.molregno = dm.molregno
+ 
+-- JOIN the activities columns
 JOIN activities a ON cs.molregno = a.molregno
-WHERE a.standard_type = 'IC50'
-  AND a.standard_units = 'nM'
-GROUP BY cs.canonical_smiles
+
+-- WHERE Filters must be added AFTER your joins!!!!
+WHERE a.standard_type = 'Ki'
+  AND LENGTH(cs.canonical_smiles) < 200
+ 
+-- Grouping
+GROUP BY cs.canonical_smiles, dm.mechanism_of_action, cs.molregno
 HAVING COUNT(a.activity_id) > 5
+
 ORDER BY avg_ic50_nM ASC
 LIMIT 20;
-
-commit;
