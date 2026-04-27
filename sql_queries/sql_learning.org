@@ -1,0 +1,194 @@
+#+title: Sql Learning
+#+HTML_HEAD: <style>
+#+HTML_HEAD: table { margin-left: auto; margin-right: auto; }
+#+HTML_HEAD: </style>
+
+
+* PSQL Tutorial
+** Querying and Creating Tables
+We will create a table called =weather=
+#+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table
+CREATE TABLE weather(
+city varchar(70), 
+temp_lo int,
+temp_hi int,
+prcp real, -- This is a floating point number!
+date date
+);
+#+end_src
+
+#+RESULTS:
+|---|
+
+Then, to insert elements, you can add =VALUES(...)= using the table format.
+
+#+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table :exports both
+-- INSERT INTO weather VALUES ('San Diego', 30, 50, 0.35, '1998-01-19');
+SELECT * from weather;
+#+end_src
+#+caption: Weather
+#+RESULTS:
+| city          | temp_lo | temp_hi | prcp |       date |
+|---------------+---------+---------+------+------------|
+| San Francisco |      46 |      50 | 0.25 | 1994-11-27 |
+| San Francisco |      46 |      50 | 0.25 | 1994-11-27 |
+|               |         |         |      |            |
+| San Diego     |      30 |      50 | 0.35 | 1993-03-21 |
+
+You can do some basic math with these
+#+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table
+SELECT (temp_hi + temp_lo)/2 as temp_AVE from weather;
+#+end_src
+
+#+RESULTS:
+| temp_ave |
+|----------|
+|       48 |
+|       48 |
+|       40 |
+|          |
+
+** Joining a table
+
+This code will create another table, =weather2=, which will now be used for
+
+#+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table :exports results
+--CREATE TABLE weather2(
+--city varchar(70), 
+--temp_loo int,
+--temp_hii int,
+--prcp2 real, -- This is a floating point number!
+--date date
+--);
+--INSERT INTO weather2 VALUES ('San Francisco', 30, 50, 0.35, '1998-01-19');
+--INSERT INTO weather2 VALUES ('San Diego', 30, 60, 0.35, '1998-01-19');
+--INSERT INTO weather2 VALUES ('San Angel', 40, 90, 0.25, '1987-03-21');
+SELECT * from weather2;
+#+end_src
+#+caption: Weather2
+#+RESULTS:
+| city          | temp_loo | temp_hii | prcp2 |       date |
+|---------------+----------+----------+-------+------------|
+| San Francisco |       30 |       50 |  0.35 | 1998-01-19 |
+| San Antonio   |       70 |       60 |  0.55 | 1978-03-29 |
+| San Diego     |       30 |       60 |  0.35 | 1991-10-21 |
+| San Angel     |       40 |       90 |  0.25 | 1987-03-21 |
+
+We will now practice =LEFT JOIN= with the following code
+
+#+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table :exports both 
+SELECT *
+FROM weather
+LEFT JOIN weather2 using(city);
+#+end_src
+
+#+RESULTS:
+| city          | temp_lo | temp_hi | prcp |       date | temp_loo | temp_hii | prcp2 |       date |
+|---------------+---------+---------+------+------------+----------+----------+-------+------------|
+| San Francisco |      46 |      50 | 0.25 | 1994-11-27 |       30 |       50 |  0.35 | 1998-01-19 |
+| San Francisco |      46 |      50 | 0.25 | 1994-11-27 |       30 |       50 |  0.35 | 1998-01-19 |
+|               |         |         |      |            |          |          |       |            |
+| San Diego     |      30 |      50 | 0.35 | 1993-03-21 |       30 |       60 |  0.35 | 1991-10-21 |
+| San Diego     |      30 |      50 | 0.35 | 1993-03-21 |       30 |       60 |  0.35 | 1991-10-21 |
+
+
+So, notice the following effects of a  =LEFT JOIN=,
+- The columns from =weather2= are appended to those of =weather=, using city as the condition for joining. 
+- Even the Blank city has been joined!
+- The added information for San Francisco and Dan Diego have been duplicated for both entries withing =weather=.
+
+Now let's do a right join, which keeps all elements of B, and only appends the common elements of A (on the left?)
+
+#+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table :exports both 
+SELECT *
+FROM weather
+RIGHT JOIN weather2 using(city);
+#+end_src
+#+caption: RIGHT JOIN
+#+RESULTS:
+| city          | temp_lo | temp_hi | prcp |       date | temp_loo | temp_hii | prcp2 |       date |
+|---------------+---------+---------+------+------------+----------+----------+-------+------------|
+| San Francisco |      46 |      50 | 0.25 | 1994-11-27 |       30 |       50 |  0.35 | 1998-01-19 |
+| San Francisco |      46 |      50 | 0.25 | 1994-11-27 |       30 |       50 |  0.35 | 1998-01-19 |
+| San Antonio   |         |         |      |            |       70 |       60 |  0.55 | 1978-03-29 |
+| San Diego     |      30 |      50 | 0.35 | 1993-03-21 |       30 |       60 |  0.35 | 1991-10-21 |
+| San Angel     |         |         |      |            |       40 |       90 |  0.25 | 1987-03-21 |
+
+The =RIGHT JOIN= preserves all elements of the table you are joining (weather2), but notice the order: it contains the columns of =Weather= first, and then those of =weather2=. However, now we have San Antonio in our cities, which is a record of =weather2=; there are empty boxes because table A does not have access to them! This is just a phenomenological explanation of what is seen.
+
+Let us now perform an =INNER JOIN=, where we concatenate values that are in common.
+#+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table :exports both 
+SELECT *
+FROM weather
+INNER JOIN weather2 using(city);
+#+end_src
+#+caption: INNER JOIN
+#+RESULTS:
+| city          | temp_lo | temp_hi | prcp |       date | temp_loo | temp_hii | prcp2 |       date |
+|---------------+---------+---------+------+------------+----------+----------+-------+------------|
+| San Francisco |      46 |      50 | 0.25 | 1994-11-27 |       30 |       50 |  0.35 | 1998-01-19 |
+| San Francisco |      46 |      50 | 0.25 | 1994-11-27 |       30 |       50 |  0.35 | 1998-01-19 |
+| San Diego     |      30 |      50 | 0.35 | 1993-03-21 |       30 |       60 |  0.35 | 1991-10-21 |
+
+And we can also do a
+** Aggregate Functions
+There are simple functions that can be executed, such as SUM() or MAX(). However, aggregates might require a subquery, as seen here:
+#+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table :exports both 
+SELECT city from weather
+where temp_lo = (SELECT max(temp_lo) from weather)
+#+end_src
+
+#+RESULTS:
+| city          |
+|---------------|
+| San Francisco |
+| San Francisco |
+
+Let's use an aggreagate function in ChemBL to identify
+
+#+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :exports both 
+SELECT standard_type, max(standard_value) mx
+FROM activities a
+GROUP BY standard_type
+ORDER BY mx DESC
+LIMIT 30
+#+end_src
+
+#+RESULTS:
+| standard_type              |     mx |
+|----------------------------+--------|
+| Plasma_leptin              |  -80.0 |
+| Plasma_IL-6                |  -72.0 |
+| Delta MA                   |  -72.0 |
+| CFR                        |  -63.0 |
+| Plasma_cholesterol         |  -47.0 |
+| CDOG                       |  -44.0 |
+| CPCC                       |  -39.0 |
+| LV dp/dt                   |  -38.0 |
+| pChange                    |  -38.0 |
+| Plasma_insulin             |  -35.0 |
+| Thromboxane B2 level       |  -31.0 |
+| LV dP/dt                   |  -28.0 |
+| Protein interaction energy | -26.88 |
+| Variation of edema volume  |  -25.0 |
+| Max delta BP               |  -23.0 |
+| Plasma_NEFA                |  -23.0 |
+| Delta plasma cholesterol   |  -22.0 |
+| Change in blood glucose    |  -19.0 |
+| Plasma_glucose             |  -19.0 |
+| Delta non HDL-C            |  -18.0 |
+| delta Vmax                 |  -18.0 |
+| Delta BP                   |  -16.0 |
+| Maximum inhibition         |  -16.0 |
+| Vmax (uM)                  |  -15.0 |
+| Negation                   |  -14.0 |
+| Weight change at nadir     |  -14.0 |
+| Plasma_triglyceride        |  -12.0 |
+| AHA                        |  -11.3 |
+| Change in volume           |  -11.0 |
+| TC lowering                |  -11.0 |
+
+Aggregate functions will work on groups, or on the whole set if your query is not grouped
+** Common Table Expressions (CTEs)
+
+
