@@ -6,3 +6,5 @@ __pycache__/
 *.key
 venv/
 .venv/
+/ollama.org
+/SQL_questions.org
