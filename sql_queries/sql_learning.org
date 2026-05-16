@@ -1,11 +1,13 @@
 #+title: Sql Learning
+#+STARTUP: overview
 #+HTML_HEAD: <style>
 #+HTML_HEAD: table { margin-left: auto; margin-right: auto; }
 #+HTML_HEAD: </style>
 
+#+COMMENT: ORG-BABEL Settings
+#+PROPERTY: header-args:sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table
 
-* PSQL Tutorial
-** Querying and Creating Tables
+* Querying and Creating Tables
 We will create a table called =weather=
 #+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table
 CREATE TABLE weather(
@@ -48,7 +50,7 @@ SELECT (temp_hi + temp_lo)/2 as temp_AVE from weather;
 |       40 |
 |          |
 
-** Joining a table
+* Joining a table
 
 This code will create another table, =weather2=, which will now be used for
 
@@ -60,12 +62,11 @@ This code will create another table, =weather2=, which will now be used for
 --prcp2 real, -- This is a floating point number!
 --date date
 --);
---INSERT INTO weather2 VALUES ('San Francisco', 30, 50, 0.35, '1998-01-19');
---INSERT INTO weather2 VALUES ('San Diego', 30, 60, 0.35, '1998-01-19');
+--INSERT INTO weather2 VALUES ('San Angel', 29, 57, 0.85, '1989-02-19');
+--INSERT INTO weather2 VALUES ('San Diego', 30, 80, 0.35, '2002-02-20');
 --INSERT INTO weather2 VALUES ('San Angel', 40, 90, 0.25, '1987-03-21');
 SELECT * from weather2;
 #+end_src
-#+caption: Weather2
 #+RESULTS:
 | city          | temp_loo | temp_hii | prcp2 |       date |
 |---------------+----------+----------+-------+------------|
@@ -73,6 +74,9 @@ SELECT * from weather2;
 | San Antonio   |       70 |       60 |  0.55 | 1978-03-29 |
 | San Diego     |       30 |       60 |  0.35 | 1991-10-21 |
 | San Angel     |       40 |       90 |  0.25 | 1987-03-21 |
+| San Angel     |       29 |       57 |  0.85 | 1989-02-19 |
+| San Diego     |       30 |       80 |  0.35 | 2002-02-20 |
+#+caption: Weather2
 
 We will now practice =LEFT JOIN= with the following code
 
@@ -131,7 +135,7 @@ INNER JOIN weather2 using(city);
 | San Diego     |      30 |      50 | 0.35 | 1993-03-21 |       30 |       60 |  0.35 | 1991-10-21 |
 
 And we can also do a
-** Aggregate Functions
+* Aggregate Functions
 There are simple functions that can be executed, such as SUM() or MAX(). However, aggregates might require a subquery, as seen here:
 #+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :session weather-table :exports both 
 SELECT city from weather
@@ -189,6 +193,38 @@ LIMIT 30
 | TC lowering                |  -11.0 |
 
 Aggregate functions will work on groups, or on the whole set if your query is not grouped
-** Common Table Expressions (CTEs)
+* Updates 
+Say you want to change some values, systematically, of existing records. Then,
+#+begin_src sql :engine postgresql :database chembl :dbhost localhost :dbuser analyst :dbpassword Emilio007!! :exports both 
+--UPDATE weather
+--SET city = 'San Fernando'
+--WHERE city = 'San Diego'
+SELECT * from weather;
+#+end_src
+#+RESULTS:
+| city          | temp_lo | temp_hi | prcp |       date |
+|---------------+---------+---------+------+------------|
+| San Francisco |      46 |      50 | 0.25 | 1994-11-27 |
+| San Francisco |      46 |      50 | 0.25 | 1994-11-27 |
+|               |         |         |      |            |
+| San Fernando  |      30 |      50 | 0.35 | 1993-03-21 |
+
+Notice that there is a change in the data!
+* Views
+Views are queries that refer to data, but that do not affect the data (deleting a VIEW does not affect original data).  It is analogous to a shallow copy of data.
+
+#+begin_src sql 
+CREATE OR REPLACE VIEW sample_view AS
+SELECT temp_lo, prcp2
+FROM weather, weather2;
+#+end_src
+
+Then you can select your new /view/ and 
+#+begin_src sql
 
 
+#+end_src
+
+* Common Table Expressions (CTEs)
+* LATERAL Tables
+So in [[file:UNNEST_practice_warning_years.sql][this sample script]], I learned about using =LATERAL= joins. This is a powerful tool where you can bring a subquery that has access to tables outside itself (standard subqueries cannot) and the filtering loop gets processed while adding the joined right table, rather than joining and then filtering, the LATERAL table processes the rows before joining them to the left table.
